@@ -4,6 +4,10 @@ on:
     secrets:
       KUBECONFIG:
         required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
     inputs:
       image-tag:
         type: string
@@ -38,29 +42,47 @@ jobs:
     environment: production
 
     steps:
-      - name: Test Deploy
-        run : echo "Deploye Reference ${{ inputs.deploy-reference }} - ${{ inputs.image-tag }}"
-
-      - uses: actions/checkout@v1
-      - name: List Helm
-        uses: freexe/github-action-helm3@feature/aws
+      - name: 'Deploy'
+        uses: 'deliverybot/helm@v1'
         with:
-          exec: helm version && helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          kubeconfig: '${{ secrets.KUBECONFIG }}'
-
-      - uses: actions/checkout@v1
-      - name: Run Helm
-        uses: freexe/github-action-helm3@feature/aws
-        with:
-          exec: |
-                  helm upgrade --install \
-                        ${{ inputs.namespace }}/${{ inputs.deploy-reference }} \
-                        --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} \
-                        --set image.registry=${{ inputs.registry }} \
-                        --set image.repository=${{ inputs.namespace }} \
-                        --set image.tag=${{ inputs.image-tag }} \
-                        ${{ inputs.chart }}
-          kubeconfig: '${{ secrets.KUBECONFIG }}'
+          release: ${{ inputs.namespace }}/${{ inputs.deploy-reference }}
+          namespace: 'default'
+          chart: ${{ inputs.chart }}
+          #          token: '${{ github.token }}'
+          repo: 'https://investor-meet-company.github.io/bim-charts'
+          repo-alias: bim-charts
+          values: |
+            ingress.host: ${{ inputs.deploy-reference }}.${{ inputs.domain }}
+            image.registry: ${{ inputs.registry }}
+            image.repository: ${{ inputs.namespace }}
+            image.tag: ${{ inputs.image-tag }}
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG_QA }}'
+          AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+#      - name: Test Deploy
+#        run : echo "Deploye Reference ${{ inputs.deploy-reference }} - ${{ inputs.image-tag }}"
+#
+#      - uses: actions/checkout@v1
+#      - name: List Helm
+#        uses: freexe/github-action-helm3@feature/aws
+#        with:
+#          exec: helm version && helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
+#          kubeconfig: '${{ secrets.KUBECONFIG }}'
+#
+#      - uses: actions/checkout@v1
+#      - name: Run Helm
+#        uses: freexe/github-action-helm3@feature/aws
+#        with:
+#          exec: |
+#                  helm upgrade --install \
+#                        ${{ inputs.namespace }}/${{ inputs.deploy-reference }} \
+#                        --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} \
+#                        --set image.registry=${{ inputs.registry }} \
+#                        --set image.repository=${{ inputs.namespace }} \
+#                        --set image.tag=${{ inputs.image-tag }} \
+#                        ${{ inputs.chart }}
+#          kubeconfig: '${{ secrets.KUBECONFIG }}'
 
 
 
