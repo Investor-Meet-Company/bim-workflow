@@ -20,6 +20,9 @@ on:
       chart:
         type: string
         required: true
+      domain:
+        type: string
+        required: true
       runs-on:
         type: string
         required: false
