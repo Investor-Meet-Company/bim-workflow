@@ -52,7 +52,8 @@ jobs:
       - name: Run Helm
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade --install \
+          exec: |
+                  helm upgrade --install \
                         ${{ inputs.namespace }}/${{ inputs.deploy-reference }} \
                         --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} \
                         --set image.registry=${{ inputs.registry }} \
