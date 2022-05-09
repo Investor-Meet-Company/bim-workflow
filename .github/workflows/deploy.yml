@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Deliverybot Helm Action
-        uses: deliverybot/helm@v1.5.0
+        uses: glopezep/helm@v1.7.1
         with:
           release: ${{ inputs.namespace }}/${{ inputs.deploy-reference }}
           namespace: 'default'
