@@ -1,0 +1,57 @@
+name: 2. Deploy to Cluster
+on:
+  workflow_call:
+    secrets:
+      KUBECONFIG:
+        required: true
+    inputs:
+      image-tag:
+        type: string
+        required: true
+      deploy-reference:
+        type: string
+        required: true
+      namespace:
+        type: string
+        required: true
+      chart:
+        type: string
+        required: true
+      runs-on:
+        type: string
+        required: false
+        default: ubuntu-latests
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Kube
+    runs-on: ${{ inputs.runs-on }}
+    environment: production
+
+    steps:
+      - name: Test Deploy
+        run : echo "Deploye Reference ${{ inputs.deploy-reference }} - ${{ inputs.image-tag }}"
+
+      - uses: actions/checkout@v1
+      - name: List Helm
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm version && helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
+
+      - uses: actions/checkout@v1
+      - name: Run Helm
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm upgrade --install \
+                        ${{ inputs.namespace }}/${{ inputs.deploy-reference }} \
+                        --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} \
+                        --set image.tag=${{ inputs.image-tag }} \
+                        ${{ inputs.chart }}
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
+
+
+
