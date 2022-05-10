@@ -64,6 +64,7 @@ jobs:
           unzip awscliv2.zip
           sudo ./aws/install --update
           aws --version
+          aws iam list-groups --output table
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ${{ inputs.AWS_REGION }}
@@ -72,6 +73,7 @@ jobs:
       - name: Deliverybot Helm Action
         run: |
           export KUBECONFIG=/home/runner/.kube/config
+          aws iam list-groups --output table
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
           helm upgrade --install ${{ inputs.namespace }}-${{ inputs.deploy-reference }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
   
