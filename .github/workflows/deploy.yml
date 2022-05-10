@@ -51,7 +51,7 @@ jobs:
           version: v3.8.1
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1.6.1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -60,6 +60,7 @@ jobs:
 
       - name: Setup EKS
         run: |
+          echo aws --version
           aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster
 
       - name: Deliverybot Helm Action
