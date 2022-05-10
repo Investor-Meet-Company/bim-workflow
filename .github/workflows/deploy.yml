@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Set up Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v2.1
         with:
           version: v3.8.1
 
@@ -62,7 +62,7 @@ jobs:
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
-          sudo ./aws/install
+          sudo ./aws/install --update
           aws --version
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
