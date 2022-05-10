@@ -65,7 +65,9 @@ jobs:
           echo ${{ inputs.namespace }}/${{ inputs.deploy-reference }}
           echo ${{ inputs.deploy-reference }}.${{ inputs.domain }}
           aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster
-          helm version && helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
+          helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
+          export TEST_COMMAND="helm upgrade --install ${{ inputs.namespace }}/${{ inputs.deploy-reference }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}"
+          echo "${TEST_COMMAND}"
           helm upgrade --install ${{ inputs.namespace }}/${{ inputs.deploy-reference }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
 
 #      - name: Deliverybot Helm Action
