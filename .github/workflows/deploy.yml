@@ -59,7 +59,7 @@ jobs:
       - name: Set Deployment Name
         id: release
         run: |
-          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-')"
+          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-' | tr '[:upper:]' '[:lower:]')"
 
       # Configure Helm
       - name: Set up Helm
