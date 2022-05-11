@@ -54,7 +54,7 @@ jobs:
         with:
           version: '1.23.6' # The latest stable version is broken with eks as of 1.24.0
         id: install
-      -
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.6.1
         with:
