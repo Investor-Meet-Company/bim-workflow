@@ -15,9 +15,6 @@ on:
       SLACK_CHANNEL:
         type: string
         required: true
-      image-tag:
-        type: string
-        required: true
       deploy-reference:
         type: string
         required: true
@@ -31,16 +28,13 @@ on:
       registry:
         type: string
         required: true
-      chart:
-        type: string
-        required: true
       domain:
         type: string
         required: true
       runs-on:
         type: string
         required: false
-        default: ubuntu-latests
+        default: ubuntu-latest
 
 permissions:
   contents: read
@@ -91,7 +85,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.19.0
         with:
           channel-id: ${{ inputs.SLACK_CHANNEL}}
-          slack-message: "GitHub build result built on ${{ inputs.deploy-reference }}.${{ inputs.domain }} using ${{ inputs.image-tag }}"
+          slack-message: "GitHub removed ${{ inputs.deploy-reference }}.${{ inputs.project }}.${{ inputs.domain }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
