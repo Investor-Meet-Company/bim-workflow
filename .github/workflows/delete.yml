@@ -25,9 +25,6 @@ on:
       project:
         type: string
         required: true
-      registry:
-        type: string
-        required: true
       domain:
         type: string
         required: true
