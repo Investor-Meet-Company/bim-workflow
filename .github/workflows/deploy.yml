@@ -84,9 +84,7 @@ jobs:
       - name: Deliverybot Helm Action
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          helm upgrade --install ${{ inputs.project }}-${GITHUB_REFERENCE##*/} --namespace ${{ inputs.namespace }} --set ingress.host=${GITHUB_REFERENCE##*/}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
-        env:
-          GITHUB_REFERENCE: ${{ inputs.deploy-reference }}
+          helm upgrade --install ${{ inputs.project }}-${{ inputs.deploy-reference }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
 
       # Post a success message to slack
       - name: Post to a Slack channel
@@ -94,9 +92,8 @@ jobs:
         uses: slackapi/slack-github-action@v1.19.0
         with:
           channel-id: ${{ inputs.SLACK_CHANNEL}}
-          slack-message: "GitHub build result built on ${GITHUB_REFERENCE##*/}.${{ inputs.project }}.${{ inputs.domain }} using ${{ inputs.image-tag }}."
+          slack-message: "GitHub build result built on ${{ inputs.deploy-reference }}.${{ inputs.project }}.${{ inputs.domain }} using ${{ inputs.image-tag }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          GITHUB_REFERENCE: ${{ inputs.deploy-reference }}
 
 
