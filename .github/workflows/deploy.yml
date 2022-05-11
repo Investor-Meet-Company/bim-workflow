@@ -40,7 +40,7 @@ on:
       runs-on:
         type: string
         required: false
-        default: ubuntu-latests
+        default: ubuntu-latest
 
 permissions:
   contents: read
