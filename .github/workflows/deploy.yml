@@ -8,8 +8,13 @@ on:
         required: true
       AWS_ACCESS_KEY_ID:
         required: true
+      SLACK_BOT_TOKEN:
+        required: true
     inputs:
       AWS_REGION:
+        type: string
+        required: true
+      SLACK_CHANNEL:
         type: string
         required: true
       image-tag:
@@ -19,6 +24,10 @@ on:
         type: string
         required: true
       namespace:
+        type: string
+        required: false
+        default: 'default'
+      project:
         type: string
         required: true
       registry:
@@ -45,11 +54,13 @@ jobs:
     environment: production
 
     steps:
+      # Configure Helm
       - name: Set up Helm
         uses: azure/setup-helm@v2.1
         with:
           version: v3.8.2
 
+      # Configure the aws credentials use by eks.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.6.1
         with:
@@ -58,73 +69,33 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
           mask-aws-account-id: 'no'
 
+      # v1.24.0 Is currently broken with aws eks - this can be removed when that is fixed
+      # https://github.com/aws/aws-cli/issues/6920
       - name: Setup Kubectl
         run: |
           apt list -a kubectl
           curl -LO "https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl"
           install kubectl /usr/local/bin/kubectl
 
-
+      # Use EKS to setup the Kubeconfig file with the aws token creation
       - name: Setup EKS
         run: |
           aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster --role-arn arn:aws:iam::120324228563:role/eksClusterRole
-          
 
+      # Add the Helm Charts for the bim repo
       - name: Deliverybot Helm Action
         run: |
-          kubectl get pods
-          helm version
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          helm upgrade --install ${{ inputs.namespace }}-${{ inputs.deploy-reference }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
+          helm upgrade --install ${{ inputs.project }}-${{ inputs.deploy-reference }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
 
+      # Post a success message to slack
       - name: Post to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.19.0
         with:
-          channel-id: 'C011YADU2V8' #deploy-notifications
-          slack-message: "GitHub build result built"
+          channel-id: ${{ secrets.SLACK_CHANNEL}}
+          slack-message: "GitHub build result built on ${{ inputs.deploy-reference }}.${{ inputs.domain }} using ${{ inputs.image-tag }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
-#      - name: Deliverybot Helm Action
-#        uses: peymanmortazavi/eks-helm-deploy@v2.1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS__KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ inputs.AWS_REGION }}
-#          cluster-name: bb-qa-cluster
-#          namespace: default
-##          values: |
-##            ingress.host: ${{ inputs.deploy-reference }}.${{ inputs.domain }}
-##            image.registry: ${{ inputs.registry }}
-##            image.repository: ${{ inputs.namespace }}
-##            image.tag: ${{ inputs.image-tag }}
-#          name: ${{ inputs.namespace }}/${{ inputs.deploy-reference }}
-#          chart-path: --repo https://investor-meet-company.github.io/bim-charts  ${{ inputs.chart }}
-
-#      - name: Test Deploy
-#        run : echo "Deploye Reference ${{ inputs.deploy-reference }} - ${{ inputs.image-tag }}"
-#
-#      - uses: actions/checkout@v1
-#      - name: List Helm
-#        uses: freexe/github-action-helm3@feature/aws
-#        with:
-#          exec: helm version && helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-#          kubeconfig: '${{ secrets.KUBECONFIG }}'
-#
-#      - uses: actions/checkout@v1
-#      - name: Run Helm
-#        uses: freexe/github-action-helm3@feature/aws
-#        with:
-#          exec: |
-#                  helm upgrade --install \
-#                        ${{ inputs.namespace }}/${{ inputs.deploy-reference }} \
-#                        --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} \
-#                        --set image.registry=${{ inputs.registry }} \
-#                        --set image.repository=${{ inputs.namespace }} \
-#                        --set image.tag=${{ inputs.image-tag }} \
-#                        ${{ inputs.chart }}
-#          kubeconfig: '${{ secrets.KUBECONFIG }}'
-
 
 
