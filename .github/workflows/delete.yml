@@ -83,7 +83,8 @@ jobs:
       # Add the Helm Charts for the bim repo
       - name: Deliverybot Helm Action
         run: |
-          helm uninstall ${{ inputs.project }}-${{ inputs.deploy-reference }} --namespace ${{ inputs.namespace }}
+          helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
+          helm upgrade --install ${{ inputs.project }}-${{ inputs.deploy-reference }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
 
       # Post a success message to slack
       - name: Post to a Slack channel
