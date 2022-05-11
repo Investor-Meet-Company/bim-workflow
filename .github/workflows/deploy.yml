@@ -50,32 +50,33 @@ jobs:
         with:
           version: v3.8.2
 
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v1.6.1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ inputs.AWS_REGION }}
-#          mask-aws-account-id: 'no'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+          role-to-assume: arn:aws:iam::120324228563:role/eksClusterRole
+          mask-aws-account-id: 'no'
 
       - name: Setup EKS
         run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
-          aws --version
-          export AWS_EC2_METADATA_DISABLED=true
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region ${{ inputs.AWS_REGION }}
-          aws iam list-groups --output table
+#          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#          unzip awscliv2.zip
+#          sudo ./aws/install --update
+#          aws --version
+#          export AWS_EC2_METADATA_DISABLED=true
+#          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws configure set default.region ${{ inputs.AWS_REGION }}
+#          aws iam list-groups --output table
           aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster
 
       - name: Deliverybot Helm Action
         run: |
-          export AWS_EC2_METADATA_DISABLED=true
-          export KUBECONFIG=/home/runner/.kube/config
-          aws iam list-groups --output table
+#          export AWS_EC2_METADATA_DISABLED=true
+#          export KUBECONFIG=/home/runner/.kube/config
+#          aws iam list-groups --output table
           kubectl get pods
           helm version
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
