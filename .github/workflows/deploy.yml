@@ -45,6 +45,9 @@ on:
 permissions:
   contents: read
 
+env:
+  DEPLOY_REFERENCE: ${{ inputs.deploy-reference }}
+
 jobs:
   deploy:
     name: Deploy to Kube
@@ -52,6 +55,12 @@ jobs:
     environment: production
 
     steps:
+
+      - name: Set Deployment Name
+        id: release
+        run: |
+          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-')"
+
       # Configure Helm
       - name: Set up Helm
         uses: azure/setup-helm@v2.1
@@ -84,9 +93,8 @@ jobs:
       - name: Deliverybot Helm Action
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          helm upgrade --install ${{ inputs.project }}-${DEPLOY_REFERENCE##*/} --namespace ${{ inputs.namespace }} --set ingress.host=${DEPLOY_REFERENCE##*/}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
-        env:
-          DEPLOY_REFERENCE: ${{ inputs.deploy-reference }}
+          helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
+
 
       # Post a success message to slack
       - name: Post to a Slack channel
@@ -94,9 +102,8 @@ jobs:
         uses: slackapi/slack-github-action@v1.19.0
         with:
           channel-id: ${{ inputs.SLACK_CHANNEL}}
-          slack-message: "GitHub build result built on ${DEPLOY_REFERENCE##*/}.${{ inputs.project }}.${{ inputs.domain }} using ${{ inputs.image-tag }}."
+          slack-message: "GitHub build result built on ${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} using ${{ inputs.image-tag }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          DEPLOY_REFERENCE: ${{ inputs.deploy-reference }}
 
 
