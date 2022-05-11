@@ -58,9 +58,15 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
           mask-aws-account-id: 'no'
 
+      - name: Setup Kubectl
+        run: |
+          apt list -a kubectl
+          curl -LO "https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl"
+          install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+
       - name: Setup EKS
         run: |
-          sudo apt install kubectl=1.23.6-00
           aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster --role-arn arn:aws:iam::120324228563:role/eksClusterRole
           
 
