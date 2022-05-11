@@ -48,7 +48,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v2.1
         with:
-          version: v3.8.1
+          version: v3.8.2
 
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v1.6.1
@@ -76,6 +76,7 @@ jobs:
           export AWS_EC2_METADATA_DISABLED=true
           export KUBECONFIG=/home/runner/.kube/config
           aws iam list-groups --output table
+          helm version
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
           helm upgrade --install ${{ inputs.namespace }}-${{ inputs.deploy-reference }} --set ingress.host=${{ inputs.deploy-reference }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}
   
