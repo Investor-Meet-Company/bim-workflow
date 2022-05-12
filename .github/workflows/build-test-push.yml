@@ -72,9 +72,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-single-buildx
+            ${{ runner.os }}-buildx
 
       - name: Prepare meta
         id: meta
@@ -104,7 +104,7 @@ jobs:
           push: false # Pre testing
           tags: bim/app:test
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
           load: true
           target: devbuild
           ssh: |
@@ -140,3 +140,8 @@ jobs:
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
 
+      # Clear the old cache so it doesn't grow to be too big
+      - name: Move cache
+        run:
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
