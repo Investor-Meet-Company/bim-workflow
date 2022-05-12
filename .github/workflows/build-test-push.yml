@@ -97,7 +97,7 @@ jobs:
           tags: bim/app:test
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
-#          load: true
+          load: true
           target: devbuild
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
