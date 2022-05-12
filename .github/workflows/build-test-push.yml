@@ -68,14 +68,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-#      - name: Cache Docker layers
-#        uses: actions/cache@v2
-#        with:
-#          path: /tmp/.buildx-cache
-#          key: ${{ runner.os }}-buildx-${{ github.sha }}
-#          restore-keys: |
-#            ${{ runner.os }}-buildx
-
       - name: Prepare meta
         id: meta
         env:
@@ -105,9 +97,7 @@ jobs:
           tags: bim/app:test
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
-#          cache-from: type=local,src=/tmp/.buildx-cache
-#          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          load: true
+#          load: true
           target: devbuild
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
@@ -141,9 +131,3 @@ jobs:
           target: production
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
-
-      # Clear the old cache so it doesn't grow to be too big
-#      - name: Move cache
-#        run: |
-#          rm -rf /tmp/.buildx-cache
-#          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
