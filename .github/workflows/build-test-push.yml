@@ -103,8 +103,8 @@ jobs:
           file: docker/app/dockerfile
           push: false # Pre testing
           tags: bim/app:test
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
+          cache-from: type=gha, scope=${{ github.workflow }}-dev
+          cache-to: type=gha, scope=${{ github.workflow }}-dev
 #          cache-from: type=local,src=/tmp/.buildx-cache
 #          cache-to: type=local,dest=/tmp/.buildx-cache-new
           load: true
@@ -138,6 +138,8 @@ jobs:
           file: docker/app/dockerfile
           push: true # Post testing
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha, scope=${{ github.workflow }}-prod
+          cache-to: type=gha, scope=${{ github.workflow }}-prod
           target: production
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
