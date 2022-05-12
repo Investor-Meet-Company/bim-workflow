@@ -15,6 +15,9 @@ on:
       SLACK_CHANNEL:
         type: string
         required: true
+      DATABASE_HOST:
+        type: string
+        required: true
       image-tag:
         type: string
         required: true
@@ -94,7 +97,7 @@ jobs:
         id: helm
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}"
+          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")
           echo "::set-output name=selector::$(echo "${{ inputs.project }}-${{ steps.release.outputs.name }}")
