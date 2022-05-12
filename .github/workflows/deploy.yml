@@ -97,7 +97,7 @@ jobs:
           export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")
-          echo "::set-output name=selector::$(echo "app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}")
+          echo "::set-output name=selector::$(echo "{{ inputs.project }}-${{ steps.release.outputs.name }}")
 
       # Post a success message to slack
       - name: Post to a Slack channel
@@ -107,13 +107,12 @@ jobs:
           channel-id: ${{ inputs.SLACK_CHANNEL}}
           payload: |
             {
-              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Helm: ${{ steps.helm.outputs.command }}\n\nLogs: kubectl --namespace=${{ inputs.namespace }} logs (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.selector }}' --output=name)\n\nShell: kubectl --namespace=${{ inputs.namespace }} exec -it (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.selector }}' --output=name) -- /bin/bash"
+                    "text": "Helm: ${{ steps.helm.outputs.command }}\n\nLogs: bim kube logs ${{ steps.helm.outputs.selector }}\n\nShell: bim kube shell ${{ steps.helm.outputs.selector }}"
                   }
                 }
               ]
