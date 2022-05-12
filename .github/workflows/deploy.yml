@@ -97,7 +97,7 @@ jobs:
           export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")
-          echo "::set-output name=selector::$(echo "{{ inputs.project }}-${{ steps.release.outputs.name }}")
+          echo "::set-output name=selector::$(echo "${{ inputs.project }}-${{ steps.release.outputs.name }}")
 
       # Post a success message to slack
       - name: Post to a Slack channel
