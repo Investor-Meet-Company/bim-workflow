@@ -113,7 +113,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Helm: ${{ steps.helm.outputs.command }}\n\nLogs: kubectl --namespace=${{ inputs.namespace }} logs (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.selector }}' --output=name)\n\nShell: kubectl --namespace=${{ inputs.namespace }} exec -it (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.command }}' --output=name) -- /bin/bash"
+                    "text": "Helm: ${{ steps.helm.outputs.command }}\n\nLogs: kubectl --namespace=${{ inputs.namespace }} logs (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.selector }}' --output=name)\n\nShell: kubectl --namespace=${{ inputs.namespace }} exec -it (kubectl get pods --namespace ${{ inputs.namespace }} --selector '${{ steps.helm.outputs.selector }}' --output=name) -- /bin/bash"
                   }
                 }
               ]
