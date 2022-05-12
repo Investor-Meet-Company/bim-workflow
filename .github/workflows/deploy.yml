@@ -110,16 +110,11 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Helm: helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}\n
-                              Pods: kubectl --namespace=${{ inputs.namespace }} get all --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}'
-                              Logs: kubectl --namespace=${{ inputs.namespace }} logs (kubectl get pods --namespace ${{ inputs.namespace }} --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}' --output=name)\n
-                              Shell: kubectl --namespace=${{ inputs.namespace }} exec -it (kubectl get pods --namespace ${{ inputs.namespace }} --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}' --output=name) -- /bin/bash
-                  "
+                    "text": "Helm: helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.namespace }} --set image.tag=${{ inputs.image-tag }} ${{ inputs.chart }}\nPods: kubectl --namespace=${{ inputs.namespace }} get all --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}'\nLogs: kubectl --namespace=${{ inputs.namespace }} logs (kubectl get pods --namespace ${{ inputs.namespace }} --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}' --output=name)\nShell: kubectl --namespace=${{ inputs.namespace }} exec -it (kubectl get pods --namespace ${{ inputs.namespace }} --selector 'app.kubernetes.io/instance={{ inputs.project }}-${{ steps.release.outputs.name }}' --output=name) -- /bin/bash"
                   }
                 }
               ]
             }
-          slack-message: "GitHub build result built on ${{ steps.release.outputs.name }}.${{ inputs.project }}.${{ inputs.domain }} using ${{ inputs.image-tag }}."
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
