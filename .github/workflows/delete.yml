@@ -1,4 +1,4 @@
-name: 2. Deploy to Cluster
+name: 2. Delete from Cluster
 on:
   workflow_call:
     secrets:
