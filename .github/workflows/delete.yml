@@ -36,6 +36,9 @@ on:
 permissions:
   contents: read
 
+env:
+  DEPLOY_REFERENCE: ${{ inputs.deploy-reference }}
+
 jobs:
   deploy:
     name: Deploy to Kube
@@ -43,6 +46,12 @@ jobs:
     environment: production
 
     steps:
+      -
+      - name: Set Deployment Name
+        id: release
+        run: |
+          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-' | tr '[:upper:]' '[:lower:]')"
+
       # Configure Helm
       - name: Set up Helm
         uses: azure/setup-helm@v2.1
@@ -74,7 +83,7 @@ jobs:
       # Add the Helm Charts for the bim repo
       - name: Deliverybot Helm Action
         run: |
-          helm upgrade --install ${{ inputs.project }}-${{ inputs.deploy-reference }} --namespace ${{ inputs.namespace }}
+          helm uninstall ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }}
 
       # Post a success message to slack
       - name: Post to a Slack channel
