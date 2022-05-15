@@ -46,7 +46,6 @@ jobs:
     environment: production
 
     steps:
-      -
       - name: Set Deployment Name
         id: release
         run: |
