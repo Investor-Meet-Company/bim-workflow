@@ -174,7 +174,7 @@ jobs:
                       "elements": [
                         {
                           "type": "plain_text",
-                          "text": "${{ env.DEPLOYMENT_HELM_COMMAND }}"
+                          "text": "${{ env.DEPLOYMENT_HELM_COMMAND }}",
                           "emoji": true
                         }
                       ]
