@@ -100,27 +100,100 @@ jobs:
           export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set ingress.host=${{ steps.release.outputs.name }}-${{ inputs.project }}.${{ inputs.domain }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")
-          echo "::set-output name=selector::$(echo "${{ inputs.project }}-${{ steps.release.outputs.name }}")
 
-      # Post a success message to slack
-      - name: Post to a Slack channel
+      - name: Post to a Slack channel.
         id: slack
         uses: slackapi/slack-github-action@v1.19.0
         with:
-          channel-id: ${{ inputs.SLACK_CHANNEL}}
+          channel-id: C011YADU2V8
           payload: |
             {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Helm: ${{ steps.helm.outputs.command }}\n\nLogs: bim kube logs ${{ steps.helm.outputs.selector }}\n\nShell: bim kube shell ${{ steps.helm.outputs.selector }}"
-                  }
-                }
-              ]
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "A new deployment has been started:\n*<${{ env.DEPLOYMENT_WORKFLOW_URL }}|Deploy to Cluster>*"
+                        }
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "*Type:* ${{ env.DEPLOYMENT_TYPE }}\n*Ingress:* <https://${{ env.DEPLOYMENT_INGRESS }}|${{ env.DEPLOYMENT_INGRESS }}>\n*Image:* ${{ env.DEPLOYMENT_IMAGE }}\n*Reference:* ${{ env.DEPLOYMENT_REFERENCE }}\n*Namespace:* ${{ env.DEPLOYMENT_NAMESPACE }}\n*Chart:* ${{ env.DEPLOYMENT_CHART }}"
+                        }
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":pushpin: useful helm commands"
+                        },
+                        "accessory": {
+                            "type": "overflow",
+                            "options": [
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "bim kube logs ${{ env.DEPLOYMENT_REFERENCE }}",
+                                        "emoji": true
+                                    },
+                                    "value": "value-0"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "bim kube shell ${{ env.DEPLOYMENT_REFERENCE }}",
+                                        "emoji": true
+                                    },
+                                    "value": "value-1"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "kubectl get pods ${{ env.DEPLOYMENT_REFERENCE }}",
+                                        "emoji": true
+                                    },
+                                    "value": "value-2"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "${{ env.DEPLOYMENT_HELM_COMMAND }}",
+                                        "emoji": true
+                                    },
+                                    "value": "value-3"
+                                },
+                                {
+                                    "text": {
+                                        "type": "plain_text",
+                                        "text": "helm uninstall ${{ env.DEPLOYMENT_REFERENCE }}",
+                                        "emoji": true
+                                    },
+                                    "value": "value-4"
+                                }
+                            ],
+                            "action_id": "overflow-action"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          DEPLOYMENT_TYPE: "${{ github.action }}"
+          DEPLOYMENT_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          DEPLOYMENT_INGRESS: "${{ steps.release.outputs.name }}-${{ inputs.project }}.${{ inputs.domain }}"
+          DEPLOYMENT_IMAGE: "${{ inputs.image-tag }}"
+          DEPLOYMENT_IMAGE_URL: "https://${{ inputs.registry }}/${{ inputs.project }}:${{ inputs.image-tag }}"
+          DEPLOYMENT_REFERENCE: "${{ inputs.project }}-${{ steps.release.outputs.name }}"
+          DEPLOYMENT_NAMESPACE: "${{ inputs.namespace }}"
+          DEPLOYMENT_CHART: "${{ inputs.chart }}"
+          DEPLOYMENT_HELM_COMMAND: "${{ steps.helm.outputs.command }}"
 
 
