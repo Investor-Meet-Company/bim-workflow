@@ -113,7 +113,7 @@ jobs:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "A new deployment has been started:\n*<${{ env.DEPLOYMENT_WORKFLOW_URL }}|Deploy to Cluster>*"
+                            "text": "A new deployment has been completed:\n*<${{ env.DEPLOYMENT_WORKFLOW_URL }}|Deploy to Cluster>*"
                         }
                     },
                     {
@@ -183,7 +183,7 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          DEPLOYMENT_TYPE: "${{ github.action }}"
+          DEPLOYMENT_TYPE: "${{ github.event_name }}"
           DEPLOYMENT_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           DEPLOYMENT_INGRESS: "${{ steps.release.outputs.name }}-${{ inputs.project }}.${{ inputs.domain }}"
           DEPLOYMENT_IMAGE: "${{ inputs.image-tag }}"
