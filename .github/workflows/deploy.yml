@@ -130,57 +130,61 @@ jobs:
                         "type": "divider"
                     },
                     {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": ":pushpin: useful helm commands"
-                        },
-                        "accessory": {
-                            "type": "overflow",
-                            "options": [
-                                {
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "bim kube logs ${{ env.DEPLOYMENT_REFERENCE }}",
-                                        "emoji": true
-                                    },
-                                    "value": "value-0"
-                                },
-                                {
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "bim kube shell ${{ env.DEPLOYMENT_REFERENCE }}",
-                                        "emoji": true
-                                    },
-                                    "value": "value-1"
-                                },
-                                {
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "kubectl get pods ${{ env.DEPLOYMENT_REFERENCE }}",
-                                        "emoji": true
-                                    },
-                                    "value": "value-2"
-                                },
-                                {
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "${{ env.DEPLOYMENT_HELM_COMMAND }}",
-                                        "emoji": true
-                                    },
-                                    "value": "value-3"
-                                },
-                                {
-                                    "text": {
-                                        "type": "plain_text",
-                                        "text": "helm uninstall ${{ env.DEPLOYMENT_REFERENCE }}",
-                                        "emoji": true
-                                    },
-                                    "value": "value-4"
-                                }
-                            ],
-                            "action_id": "overflow-action"
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "plain_text",
+                          "text": "bim kube logs ${{ env.DEPLOYMENT_REFERENCE }}",
+                          "emoji": true
                         }
+                      ]
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "plain_text",
+                          "text": "bim kube shell ${{ env.DEPLOYMENT_REFERENCE }}",
+                          "emoji": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "plain_text",
+                          "text": "kubectl get pods ${{ env.DEPLOYMENT_REFERENCE }}",
+                          "emoji": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "plain_text",
+                          "text": "helm uninstall ${{ env.DEPLOYMENT_REFERENCE }}",
+                          "emoji": true
+                        }
+                      ]
+                    },
+                    {
+                      "type": "input",
+                      "element": {
+                        "type": "plain_text_input",
+                        "placeholder": {
+                          "type": "plain_text",
+                          "text": "${{ env.DEPLOYMENT_HELM_COMMAND }}"
+                        },
+                        "multiline": true,
+                        "action_id": "plain_text_input-action"
+                      },
+                      "label": {
+                        "text": "helm",
+                        "type": "plain_text",
+                        "emoji": true
+                      }
                     }
                 ]
             }
