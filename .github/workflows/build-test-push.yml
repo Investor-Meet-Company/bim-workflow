@@ -106,9 +106,9 @@ jobs:
         run: |
           docker run -v results:/results --rm bim/app:test test
 
-      - name: Test Dusk
-        run: |
-          docker run -v results:/results --rm bim/app:test dusk
+#      - name: Test Dusk
+#        run: |
+#          docker run -v results:/results --rm bim/app:test dusk
 
 #      - name: Results
 #        run: cat results/phpunit/laravel.xml
