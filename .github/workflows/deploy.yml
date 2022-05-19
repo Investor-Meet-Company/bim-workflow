@@ -73,7 +73,7 @@ jobs:
           else
           echo "::set-output name=name::${DEPLOY_RELEASE}-${DEPLOY_PROJECT}.${DEPLOY_DOMAIN}"
           fi
-        with:
+        env:
           DEPLOY_RELEASE: ${{ steps.release.outputs.name }}
           DEPLOY_NAMESPACE: ${{ inputs.namespace }}
           DEPLOY_PROJECT: ${{ inputs.project }}
