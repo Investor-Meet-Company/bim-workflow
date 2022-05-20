@@ -64,7 +64,7 @@ jobs:
           if [ "${DEPLOY_NAMESPACE}" = "production"] || [ "${DEPLOY_NAMESPACE}" = "staging"  ]; then
           echo "::set-output name=name::${DEPLOY_NAMESPACE}"
           else
-          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-' | tr '[:upper:]' '[:lower:]')
+          echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-' | tr '[:upper:]' '[:lower:]')"
           fi
         env:
           DEPLOY_NAMESPACE: ${{ inputs.namespace }}
