@@ -61,7 +61,11 @@ jobs:
       - name: Set Deployment Name
         id: release
         run: |
+          if [ "${DEPLOY_NAMESPACE}" = "production"] || [ "${DEPLOY_NAMESPACE}" = "staging"  ]; then
+          echo "::set-output name=name::${DEPLOY_NAMESPACE}"
+          else
           echo "::set-output name=name::$(echo ${DEPLOY_REFERENCE##*/} | tr '_' '-' | tr '[:upper:]' '[:lower:]')"
+          fi
 
       - name: Set Deployment Ingress
         id: ingress
@@ -114,7 +118,7 @@ jobs:
         id: helm
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set environment=${{ inputs.namespace }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
+          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --set environment=${{ inputs.namespace }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")"
         env:
