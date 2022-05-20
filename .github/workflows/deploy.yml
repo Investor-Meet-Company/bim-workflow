@@ -31,12 +31,10 @@ on:
       project:
         type: string
         required: true
-      registry:
-        type: string
-        required: true
       chart:
         type: string
-        required: true
+        required: false
+        default: 'bim-charts/bim-laravel'
       domain:
         type: string
         required: true
@@ -94,6 +92,10 @@ jobs:
           aws-region: ${{ inputs.AWS_REGION }}
           mask-aws-account-id: 'no'
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       # v1.24.0 Is currently broken with aws eks - this can be removed when that is fixed
       # https://github.com/aws/aws-cli/issues/6920
       - name: Setup Kubectl
@@ -112,9 +114,11 @@ jobs:
         id: helm
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set environment=${{ inputs.namespace }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${{ inputs.registry }} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
+          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --namespace ${{ inputs.namespace }} --set environment=${{ inputs.namespace }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Post to a Slack channel.
         id: slack
@@ -202,7 +206,7 @@ jobs:
           DEPLOYMENT_WORKFLOW_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           DEPLOYMENT_INGRESS: "${{ steps.ingress.outputs.name }}"
           DEPLOYMENT_IMAGE: "${{ inputs.image-tag }}"
-          DEPLOYMENT_IMAGE_URL: "https://${{ inputs.registry }}/${{ inputs.project }}:${{ inputs.image-tag }}"
+          DEPLOYMENT_IMAGE_URL: "https://${{ steps.login-ecr.outputs.registry }}/${{ inputs.project }}:${{ inputs.image-tag }}"
           DEPLOYMENT_REFERENCE: "${{ inputs.project }}-${{ steps.release.outputs.name }}"
           DEPLOYMENT_NAMESPACE: "${{ inputs.namespace }}"
           DEPLOYMENT_CHART: "${{ inputs.chart }}"
