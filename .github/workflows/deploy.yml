@@ -66,7 +66,7 @@ jobs:
       - name: Set Deployment Ingress
         id: ingress
         run: |
-          if [ "${DEPLOY_NAMESPACE}" = "production" ]; then
+          if [ "${DEPLOY_NAMESPACE}" = "production"] || [ "${DEPLOY_NAMESPACE}" = "staging"  ]; then
           echo "::set-output name=name::${DEPLOY_DOMAIN}"
           else
           echo "::set-output name=name::${DEPLOY_RELEASE}-${DEPLOY_PROJECT}.${DEPLOY_DOMAIN}"
