@@ -17,7 +17,7 @@ on:
         required: true
       DATABASE_HOST:
         type: string
-        required: true
+        required: false
       image-tag:
         type: string
         required: true
