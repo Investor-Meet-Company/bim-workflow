@@ -102,6 +102,7 @@ jobs:
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
 
+      # https://ovirium.com/blog/how-to-make-mysql-work-in-your-github-actions/
       - name: Set up MySQL
         run: |
           sudo /etc/init.d/mysql start
