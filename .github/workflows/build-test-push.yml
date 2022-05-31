@@ -46,7 +46,7 @@ jobs:
           MYSQL_PASSWORD: database_testing
           MYSQL_ROOT_PASSWORD: database_testing
         ports:
-          - 33306:3306
+          - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     outputs:
       image-tag: ${{ steps.image.outputs.sha }}
