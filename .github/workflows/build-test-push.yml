@@ -102,9 +102,24 @@ jobs:
           ssh: |
             default=${{ env.SSH_AUTH_SOCK }}
 
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+        env:
+          DB_DATABASE: test_db
+          DB_USER: root
+          DB_PASSWORD: root
+
       - name: Test
         run: |
           docker run -v results:/results --rm bim/app:test test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3006
+          DB_DATABASE: test_db
+          DB_USER: root
+          DB_PASSWORD: root
 
 #      - name: Test Dusk
 #        run: |
