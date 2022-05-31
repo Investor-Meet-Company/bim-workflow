@@ -35,6 +35,7 @@ permissions:
 jobs:
   build:
     name: Build Docker Image With Buildx
+    container: ubuntu
     runs-on: ${{ inputs.runs-on }}
     environment: production
     services:
