@@ -37,6 +37,17 @@ jobs:
     name: Build Docker Image With Buildx
     runs-on: ${{ inputs.runs-on }}
     environment: production
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: database_testing
+          MYSQL_USER: database_testing
+          MYSQL_PASSWORD: database_testing
+          MYSQL_ROOT_PASSWORD: database_testing
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     outputs:
       image-tag: ${{ steps.image.outputs.sha }}
     steps:
@@ -103,14 +114,14 @@ jobs:
             default=${{ env.SSH_AUTH_SOCK }}
 
       # https://ovirium.com/blog/how-to-make-mysql-work-in-your-github-actions/
-      - name: Set up MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
-        env:
-          DB_DATABASE: database_testing
-          DB_USER: root
-          DB_PASSWORD: root
+#      - name: Set up MySQL
+#        run: |
+#          sudo /etc/init.d/mysql start
+#          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+#        env:
+#          DB_DATABASE: database_testing
+#          DB_USER: root
+#          DB_PASSWORD: root
 
       - name: Test
         run: |
