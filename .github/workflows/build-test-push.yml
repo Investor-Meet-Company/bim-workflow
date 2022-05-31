@@ -115,6 +115,7 @@ jobs:
         run: |
           docker run -v results:/results --rm bim/app:test test
         env:
+          BROADCAST_DRIVER: log
           DB_HOST: localhost
           DB_PORT: 3006
           DB_DATABASE: test_db
