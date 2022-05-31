@@ -108,8 +108,8 @@ jobs:
           mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
         env:
           DB_DATABASE: database_testing
-          DB_USER: database_testing
-          DB_PASSWORD: database_testing
+          DB_USER: root
+          DB_PASSWORD: root
 
       - name: Test
         run: |
