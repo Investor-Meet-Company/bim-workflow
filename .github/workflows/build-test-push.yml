@@ -35,7 +35,6 @@ permissions:
 jobs:
   build:
     name: Build Docker Image With Buildx
-    container: ubuntu
     runs-on: ${{ inputs.runs-on }}
     environment: production
     services:
@@ -123,10 +122,22 @@ jobs:
 #          DB_DATABASE: database_testing
 #          DB_USER: root
 #          DB_PASSWORD: root
+      - name: Create Docker Network
+        run: docker network create data
+
+#  docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+      - name: Setup Mysql
+        run: |
+          docker run --network data -e MYSQL_DATABASE=database_testing -e MYSQL_USER=database_testing -e MYSQL_PASSWORD=database_testing -e MYSQL_ROOT_PASSWORD=database_testing -d mysql:8
+        env:
+          MYSQL_DATABASE: database_testing
+          MYSQL_USER: database_testing
+          MYSQL_PASSWORD: database_testing
+          MYSQL_ROOT_PASSWORD: database_testing
 
       - name: Test
         run: |
-          docker run -v results:/results --network host --rm bim/app:test test
+          docker run -v results:/results --network data --rm bim/app:test test
 
 #      - name: Test Dusk
 #        run: |
