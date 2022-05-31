@@ -107,20 +107,13 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
         env:
-          DB_DATABASE: test_db
-          DB_USER: root
-          DB_PASSWORD: root
+          DB_DATABASE: database_testing
+          DB_USER: database_testing
+          DB_PASSWORD: database_testing
 
       - name: Test
         run: |
-          docker run -v results:/results --rm bim/app:test test
-        env:
-          BROADCAST_DRIVER: log
-          DB_HOST: localhost
-          DB_PORT: 3006
-          DB_DATABASE: test_db
-          DB_USER: root
-          DB_PASSWORD: root
+          docker run -v results:/results --network host --rm bim/app:test test
 
 #      - name: Test Dusk
 #        run: |
