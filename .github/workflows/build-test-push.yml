@@ -37,20 +37,23 @@ jobs:
     name: Build Docker Image With Buildx
     runs-on: ${{ inputs.runs-on }}
     environment: production
-    services:
-      mysql:
-        image: mysql:8
+    outputs:
+      image-tag: ${{ steps.image.outputs.sha }}
+    steps:
+      - name: Create Docker Network
+        run: docker network create data
+
+      # options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      #  docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+      - name: Setup Mysql
+        run: |
+          docker run --hostname mysql --network data -e MYSQL_DATABASE=database_testing -e MYSQL_USER=database_testing -e MYSQL_PASSWORD=database_testing -e MYSQL_ROOT_PASSWORD=database_testing -d mysql:8
         env:
           MYSQL_DATABASE: database_testing
           MYSQL_USER: database_testing
           MYSQL_PASSWORD: database_testing
           MYSQL_ROOT_PASSWORD: database_testing
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    outputs:
-      image-tag: ${{ steps.image.outputs.sha }}
-    steps:
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -122,18 +125,7 @@ jobs:
 #          DB_DATABASE: database_testing
 #          DB_USER: root
 #          DB_PASSWORD: root
-      - name: Create Docker Network
-        run: docker network create data
 
-#  docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
-      - name: Setup Mysql
-        run: |
-          docker run --hostname mysql --network data -e MYSQL_DATABASE=database_testing -e MYSQL_USER=database_testing -e MYSQL_PASSWORD=database_testing -e MYSQL_ROOT_PASSWORD=database_testing -d mysql:8
-        env:
-          MYSQL_DATABASE: database_testing
-          MYSQL_USER: database_testing
-          MYSQL_PASSWORD: database_testing
-          MYSQL_ROOT_PASSWORD: database_testing
 
       - name: Test
         run: |
