@@ -47,7 +47,7 @@ jobs:
       # Start the process here so it is ready for when testing it ready. //TODO: wait for healthcheck?
       - name: Setup Mysql
         run: |
-          docker run --hostname mysql \
+          docker run --hostname database_testing \
                     --network data \
                     -e MYSQL_DATABASE=${{ env.MYSQL_DATABASE }} \
                     -e MYSQL_USER=${{ env.MYSQL_USER }} \
