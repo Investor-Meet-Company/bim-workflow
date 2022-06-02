@@ -60,6 +60,12 @@ jobs:
           MYSQL_PASSWORD: database_testing
           MYSQL_ROOT_PASSWORD: database_testing
 
+      - name: Setup Selenium
+        run: |
+          docker run --hostname selenium \
+                    --network data \
+                    -d selenium/standalone-chrome
+
       # Checkout the code
       - name: Checkout
         uses: actions/checkout@v3
