@@ -137,11 +137,16 @@ jobs:
       # Test the build
       - name: Test
         run: |
-          docker run -v results:/results --network data --rm bim/app:test test
+          docker run -v /results:/results --network data --rm bim/app:test test
 
       - name: Test Dusk
         run: |
-          docker run -v results:/results --network data --rm bim/app:test dusk
+          docker run -v /tests/Browser/screenshots:/var/www/tests/Browser/screenshots --network data --hostname app_testing --rm bim/app:test  dusk:production
+
+      - name: Upload Screenshots
+        if: failure()
+        run: |
+          aws s3 sync /tests/Browser/screenshots s3://bookbuild-dusk/screenshots
 
 #      - name: Results
 #        run: cat results/phpunit/laravel.xml
