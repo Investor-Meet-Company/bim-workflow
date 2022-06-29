@@ -18,6 +18,10 @@ on:
       DATABASE_HOST:
         type: string
         required: false
+      cluster:
+        type: string
+        required: false
+        default: 'bb-qa-cluster'
       image-tag:
         type: string
         required: true
@@ -113,7 +117,7 @@ jobs:
       # Use EKS to setup the Kubeconfig file with the aws token creation
       - name: Setup EKS
         run: |
-          aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name bb-qa-cluster --role-arn arn:aws:iam::120324228563:role/eksClusterRole
+          aws eks --region ${{ inputs.AWS_REGION }} update-kubeconfig --name ${{ inputs.cluster }} --role-arn arn:aws:iam::120324228563:role/eksClusterRole
 
       # Add the Helm Charts for the bim repo
       - name: Deliverybot Helm Action
