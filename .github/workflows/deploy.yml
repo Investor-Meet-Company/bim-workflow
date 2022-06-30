@@ -46,6 +46,14 @@ on:
       domain:
         type: string
         required: true
+      cron:
+        type: string
+        required: false
+        default: false
+      autoscaling:
+        type: string
+        required: false
+        default: false
       runs-on:
         type: string
         required: false
@@ -128,7 +136,7 @@ jobs:
         id: helm
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --set environment=${{ inputs.environment }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
+          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --set environment=${{ inputs.environment }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set cron.enabled=${{ inputs.cron }} --set autoscaling.enabled=${{ inputs.autoscaling }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")"
         env:
@@ -156,7 +164,7 @@ jobs:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*Type:* ${{ env.DEPLOYMENT_TYPE }}\n*Ingress:* <https://${{ env.DEPLOYMENT_INGRESS }}|${{ env.DEPLOYMENT_INGRESS }}>\n*Image:* ${{ env.DEPLOYMENT_IMAGE }}\n*Reference:* ${{ env.DEPLOYMENT_REFERENCE }}\n*Namespace:* ${{ env.DEPLOYMENT_NAMESPACE }}\n*Chart:* ${{ env.DEPLOYMENT_CHART }}"
+                            "text": "*Type:* ${{ env.DEPLOYMENT_TYPE }}\n*Ingress:* <https://${{ env.DEPLOYMENT_INGRESS }}|${{ env.DEPLOYMENT_INGRESS }}>\n*Image:* ${{ env.DEPLOYMENT_IMAGE }}\n*Reference:* ${{ env.DEPLOYMENT_REFERENCE }}\n*Namespace:* ${{ env.DEPLOYMENT_NAMESPACE }}\n*Environment:* ${{ env.DEPLOYMENT_ENVIRONMENT }}\n*Chart:* ${{ env.DEPLOYMENT_CHART }}"
                         }
                     },
                     {
@@ -223,6 +231,7 @@ jobs:
           DEPLOYMENT_IMAGE_URL: "https://${{ steps.login-ecr.outputs.registry }}/${{ inputs.project }}:${{ inputs.image-tag }}"
           DEPLOYMENT_REFERENCE: "${{ inputs.project }}-${{ steps.release.outputs.name }}"
           DEPLOYMENT_NAMESPACE: "${{ inputs.namespace }}"
+          DEPLOYMENT_ENVIRONMENT: "${{ inputs.environment }}"
           DEPLOYMENT_CHART: "${{ inputs.chart }}"
           DEPLOYMENT_HELM_COMMAND: "${{ steps.helm.outputs.command }}"
 
