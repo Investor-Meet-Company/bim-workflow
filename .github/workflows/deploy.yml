@@ -18,6 +18,9 @@ on:
       DATABASE_HOST:
         type: string
         required: false
+      DATABASE_HOST_READ:
+        type: string
+        required: false
       cluster:
         type: string
         required: false
@@ -136,7 +139,7 @@ jobs:
         id: helm
         run: |
           helm repo add bim-charts https://investor-meet-company.github.io/bim-charts
-          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --set environment=${{ inputs.environment }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set cron.enabled=${{ inputs.cron }} --set autoscaling.enabled=${{ inputs.autoscaling }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
+          export HELM_COMMAND="helm upgrade --install ${{ inputs.project }}-${{ steps.release.outputs.name }} --set environment=${{ inputs.environment }} --set ingress.host=${{ steps.ingress.outputs.name }} --set image.registry=${ECR_REGISTRY} --set image.repository=${{ inputs.project }} --set image.tag=${{ inputs.image-tag }} --set database.host=${{ inputs.DATABASE_HOST }} --set database.host_read=${{ inputs.DATABASE_HOST_READ }} --set cron.enabled=${{ inputs.cron }} --set autoscaling.enabled=${{ inputs.autoscaling }} --set database.name=${{ inputs.project }}-${{ steps.release.outputs.name }} ${{ inputs.chart }}"
           $HELM_COMMAND
           echo "::set-output name=command::$(echo "${HELM_COMMAND}")"
         env:
